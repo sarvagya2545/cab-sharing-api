@@ -9,24 +9,37 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        required: false
+    },
+    googleId: {
+        type: String,
         required: true
     },
     date: {
         type: Date,
         default: Date.now
     },
-    trips: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Trip'
-    }],
-    pastTrips: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Trip'
-    }],
-    tripRequests: [{
-        type: Schema.Types.ObjectId,
-        ref: 'TripRequest'
-    }]
+    trips: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Trip'
+        }],
+        default: []
+    },
+    pastTrips: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Trip'
+        }],
+        default: []
+    },
+    tripRequests: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'TripRequest'
+        }],
+        default: []
+    }
 });
 
 module.exports = mongoose.model('User', userSchema);
