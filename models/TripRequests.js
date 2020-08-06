@@ -31,6 +31,15 @@ const tripRequestSchema = new mongoose.Schema({
             },
         },
     ],
+    invitations: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Trip',
+            }
+        ],
+        default: []
+    },
     date: {
         type: Date,
         default: Date.now

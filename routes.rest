@@ -1,1 +1,21 @@
-GET http://localhost:5000/tripRequests/test
+POST http://localhost:5000/users/oauth/google
+Content-Type: application/json
+
+{
+    "access_token": "ya29.a0AfH6SMCiau_WRKdU9s9tSCpP56GEEHhwWGY4gKu59EuXafYjTXI22KdStxFsX8roQkZFWKlgxW1Q-DxLqCw3X_OsX6qxuYMjLSIkj8zH3jmJbOpGoe7tzmHKfZrhPd568ee3AAUMZ9Uky8qXICfict34eq0nZkAfZ9M"
+}
+
+###
+
+GET http://localhost:5000/users/secret
+Authorization:  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJTYXJ2YWd5YSIsInN1YiI6IjVmMjNkZTcxNTQxOTM5ODNiOWUyYTc5YiIsImlhdCI6MTU5NjM1NTYxNzg5NH0.CY-tVFAJRsVRc1JEg5ZINnNIFdwHE-T2mb_eAtN7ZBw
+
+###
+
+POST http://localhost:5000/trips/create
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJTYXJ2YWd5YSIsInN1YiI6IjVmMjNkZTcxNTQxOTM5ODNiOWUyYTc5YiIsImlhdCI6MTU5NjM1NTYxNzg5NH0.CY-tVFAJRsVRc1JEg5ZINnNIFdwHE-T2mb_eAtN7ZBw
+
+###
+
+POST http://localhost:5000/tripRequests/create
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJTYXJ2YWd5YSIsInN1YiI6IjVmMjNkZTcxNTQxOTM5ODNiOWUyYTc5YiIsImlhdCI6MTU5NjM1NTYxNzg5NH0.CY-tVFAJRsVRc1JEg5ZINnNIFdwHE-T2mb_eAtN7ZBw
