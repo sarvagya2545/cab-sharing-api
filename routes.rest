@@ -2,7 +2,7 @@ POST http://localhost:5000/users/oauth/google
 Content-Type: application/json
 
 {
-    "access_token": "ya29.a0AfH6SMCiau_WRKdU9s9tSCpP56GEEHhwWGY4gKu59EuXafYjTXI22KdStxFsX8roQkZFWKlgxW1Q-DxLqCw3X_OsX6qxuYMjLSIkj8zH3jmJbOpGoe7tzmHKfZrhPd568ee3AAUMZ9Uky8qXICfict34eq0nZkAfZ9M"
+    "access_token": "ya29.a0AfH6SMA1_xEgFfo9eGfwNGhLS7dPZUcbsCWXTe8tbW1C7uI1PfidMN1OSO72yrn9L08kZDzbp0tFKY22ROjy8A2wf4ytKJSVePmb9qck6VNPZx9MLRLVoAqLUQwo3AYBJ9c67kNP8LRRf_lQ3xtgygO1N36HVt84dJQ"
 }
 
 ###

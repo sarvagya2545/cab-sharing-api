@@ -6,23 +6,23 @@ const User = require('../../models/User');
 const tripLocations = require('../../config/status').tripLocations;
 
 function getLocation(location) {
-    if(location === undefined) return null;
-    if(location.toUpperCase() === tripLocations.CAMPUS) return 'CAMPUS';
-    if(location.toUpperCase() === tripLocations.RAILWAY_STATION) return 'RAILWAY_STTAION';
-    if(location.toUpperCase() === tripLocations.AIRPORT) return 'AIRPORT';
+    if (location === undefined) return null;
+    if (location.toUpperCase() === tripLocations.CAMPUS) return 'CAMPUS';
+    if (location.toUpperCase() === tripLocations.RAILWAY_STATION) return 'RAILWAY_STATION';
+    if (location.toUpperCase() === tripLocations.AIRPORT) return 'AIRPORT';
     return null;
 }
 
 module.exports = {
     getAllTripRequests: async (req, res) => {
-        try{
+        try {
             const tripRequests = await TripRequest.find();
             res.json({ tripRequestsList: tripRequests });
         } catch (err) {
             res.status(503).json({ err: err.message });
         }
     },
-    createTripRequest: async (req,res) => {
+    createTripRequest: async (req, res) => {
         try {
             const newTripRequest = new TripRequest({
                 user: req.user,
@@ -32,16 +32,16 @@ module.exports = {
                 },
                 timings: req.body.timings
             });
-            
+
             // find the user who made the request
             const foundUser = await User.findById(req.user.id);
-            
+
             // check if user is found or not
-            if(foundUser) {
+            if (foundUser) {
                 // If user is there, then add tripRequest to his profile and then save the user
                 foundUser.tripRequests.push(newTripRequest);
                 foundUser.save();
-    
+
                 // then save the tripRequest in the tripRequests database
                 newTripRequest.save()
                     .then(tripRequest => {
@@ -51,10 +51,61 @@ module.exports = {
                     .catch(err => res.json({ err }));
             } else {
                 res.status(401).json({ err: 'User not found, hence request incomplete. Make sure you are logged in and then try again.' });
-            }    
+            }
 
         } catch (err) {
-            console.log(err);
+            res.status(500).json({ err });
         }
+    },
+    getTripRequestByID: async (req, res) => {
+        try {
+            const tripRequest = await TripRequest.findById(req.params.tripReqID);
+            res.json({ tripRequest });
+        } catch (err) {
+            res.status(404).json({ msg: 'trip request not found' });
+        }
+    },
+    getUsersTripRequests: async (req, res) => {
+        try {
+            const userRequests = await TripRequest.find({ user: req.user });
+            res.json({ userRequests });
+        } catch (err) {
+            res.json({ err });
+        }
+    },
+    deleteTripRequestByID: async (req, res) => {
+        try{
+            const requestToBeDeleted = await TripRequest.findById(req.params.tripReqID);
+    
+            // console.log(typeof requestToBeDeleted.user);     // object
+            // console.log(typeof req.user.id);                 // string
+    
+            // (==) instead of (===) because of different types of req.user.id and requestToBeDeleted.user
+            if (requestToBeDeleted.user == req.user.id) {
+    
+                // find the user who made the request
+                const foundUser = await User.findById(req.user.id);
+                
+                // If user is there, then add tripRequest to his profile and then save the user
+                foundUser.tripRequests = foundUser.tripRequests.filter(request => request != req.params.tripReqID);
+                foundUser.save();
+                await TripRequest.findByIdAndRemove(req.params.tripReqID);
+                
+                res.json({  msg: 'Trip Request successfully deleted' });
+            } else {
+                res.status(401).send('Not authorised');
+            }
+        } catch(err) {
+            res.status(404).json({ msg: 'The trip request was not found in the database' });
+            // res.send(err);
+        }
+    },
+    deleteAllTheUsersTripRequests: async (req, res) => {
+        try {
+            await TripRequest.deleteMany({ user: req.user });
+            res.send('deleted');
+        } catch (err) {
+            res.json({ err });
+        }   
     }
 }
