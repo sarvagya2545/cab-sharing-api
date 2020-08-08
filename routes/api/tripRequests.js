@@ -33,9 +33,9 @@ router.route('/id/:tripReqID')
     .get(TripRequestController.getTripRequestByID)
     //@desc     Delete a trip request by its id
     //@access   PRIVATE
-    .delete(passportJWT, TripRequestController.deleteTripRequestByID);
+    .delete(passportJWT, TripRequestController.deleteTripRequestByID);    
 
-
+// User's Trip requests
 //@route    /api/tripRequests/user/all
 router.route('/user/all')
     //@desc     Get all the tripRequests made by the user

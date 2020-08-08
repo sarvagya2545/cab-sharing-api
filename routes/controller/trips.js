@@ -11,12 +11,7 @@ module.exports = {
     },
     addTrip: async (req,res) => {
         try {
-            // console.log('req.user', req.user);
-            // const trip = new Trip({
-            //     admins: [req.user],
-            //     passengers: [req.user],
-            // });
-
+            
         } catch (err) {
             res.status(500).json({ err: err.message });
         }

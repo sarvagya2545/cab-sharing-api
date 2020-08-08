@@ -5,6 +5,9 @@ const User = require('../../models/User');
 // Import trip locations config file
 const tripLocations = require('../../config/status').tripLocations;
 
+// Import validators
+const { validateLocation, validateTimings } = require('../../validators/tripRequestValidator');
+
 function getLocation(location) {
     if (location === undefined) return null;
     if (location.toUpperCase() === tripLocations.CAMPUS) return 'CAMPUS';
@@ -24,11 +27,33 @@ module.exports = {
     },
     createTripRequest: async (req, res) => {
         try {
+            const source = req.body.source;
+            const destination = req.body.destination;
+
+            // validate the location
+            if (validateLocation(source) === null || validateLocation(destination) === null) {
+                const errors = {};
+                if (validateLocation(source) === null) { 
+                    errors.src = 'Source location is not valid.'; 
+                }
+                if (validateLocation(destination) === null) { 
+                    errors.dest = 'Destination location is not valid.'; 
+                }
+                return res.status(400).json(errors);
+            }
+
+            // Validate the timings
+            const { errors, isValid } = validateTimings(req.body.timings);
+            if(!isValid) {
+                return res.status(400).json(errors);
+            }
+
+            // If validated, then add the new tripRequest
             const newTripRequest = new TripRequest({
                 user: req.user,
                 route: {
-                    source: getLocation(req.body.source),
-                    destination: getLocation(req.body.destination)
+                    source: getLocation(source),
+                    destination: getLocation(destination)
                 },
                 timings: req.body.timings
             });
@@ -49,6 +74,7 @@ module.exports = {
                         res.json({ tripRequest: tripRequest });
                     })
                     .catch(err => res.json({ err }));
+
             } else {
                 res.status(401).json({ err: 'User not found, hence request incomplete. Make sure you are logged in and then try again.' });
             }
@@ -74,28 +100,28 @@ module.exports = {
         }
     },
     deleteTripRequestByID: async (req, res) => {
-        try{
+        try {
             const requestToBeDeleted = await TripRequest.findById(req.params.tripReqID);
-    
+
             // console.log(typeof requestToBeDeleted.user);     // object
             // console.log(typeof req.user.id);                 // string
-    
+
             // (==) instead of (===) because of different types of req.user.id and requestToBeDeleted.user
             if (requestToBeDeleted.user == req.user.id) {
-    
+
                 // find the user who made the request
                 const foundUser = await User.findById(req.user.id);
-                
+
                 // If user is there, then add tripRequest to his profile and then save the user
                 foundUser.tripRequests = foundUser.tripRequests.filter(request => request != req.params.tripReqID);
                 foundUser.save();
                 await TripRequest.findByIdAndRemove(req.params.tripReqID);
-                
-                res.json({  msg: 'Trip Request successfully deleted' });
+
+                res.json({ msg: 'Trip Request successfully deleted' });
             } else {
                 res.status(401).send('Not authorised');
             }
-        } catch(err) {
+        } catch (err) {
             res.status(404).json({ msg: 'The trip request was not found in the database' });
             // res.send(err);
         }
@@ -106,6 +132,6 @@ module.exports = {
             res.send('deleted');
         } catch (err) {
             res.json({ err });
-        }   
+        }
     }
 }
