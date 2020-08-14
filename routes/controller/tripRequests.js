@@ -8,14 +8,6 @@ const tripLocations = require('../../config/status').tripLocations;
 // Import validators
 const { validateLocation, validateTimings } = require('../../validators/tripRequestValidator');
 
-function getLocation(location) {
-    if (location === undefined) return null;
-    if (location.toUpperCase() === tripLocations.CAMPUS) return 'CAMPUS';
-    if (location.toUpperCase() === tripLocations.RAILWAY_STATION) return 'RAILWAY_STATION';
-    if (location.toUpperCase() === tripLocations.AIRPORT) return 'AIRPORT';
-    return null;
-}
-
 module.exports = {
     getAllTripRequests: async (req, res) => {
         try {
@@ -52,8 +44,8 @@ module.exports = {
             const newTripRequest = new TripRequest({
                 user: req.user,
                 route: {
-                    source: getLocation(source),
-                    destination: getLocation(destination)
+                    source: validateLocation(source),
+                    destination: validateLocation(destination)
                 },
                 timings: req.body.timings
             });
@@ -63,22 +55,20 @@ module.exports = {
 
             // check if user is found or not
             if (foundUser) {
+                // then save the tripRequest in the tripRequests database
+                newTripRequest.save()
+                .then(tripRequest => {
+                    //send the trip request data back 
+                    res.json({ tripRequest: tripRequest });
+                })
+                .catch(err => res.json({ err }));
+
                 // If user is there, then add tripRequest to his profile and then save the user
                 foundUser.tripRequests.push(newTripRequest);
                 foundUser.save();
-
-                // then save the tripRequest in the tripRequests database
-                newTripRequest.save()
-                    .then(tripRequest => {
-                        //send the trip request data back 
-                        res.json({ tripRequest: tripRequest });
-                    })
-                    .catch(err => res.json({ err }));
-
             } else {
                 res.status(401).json({ err: 'User not found, hence request incomplete. Make sure you are logged in and then try again.' });
             }
-
         } catch (err) {
             res.status(500).json({ err });
         }

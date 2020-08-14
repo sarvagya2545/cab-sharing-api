@@ -6,14 +6,16 @@ const tripSchema = new mongoose.Schema({
     passengers: {
         type: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
+                user : {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                },
                 // 3 types of stats => PENDING, MEMBER, ADMIN
                 status: {
                     type: 'String',
                     default: stats.tripPassengerStat.PENDING
                 },
-            },
+            }
         ],
     },
     route: {
@@ -50,12 +52,15 @@ const tripSchema = new mongoose.Schema({
         default: Date.now,
     },
     // people who ask for joining the trip
-    requests: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
-    ],
+    requests: {
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+        default: []
+    },
 });
 
 module.exports = mongoose.model("Trip", tripSchema);
